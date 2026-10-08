@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Check your domain's email security and website basics and get a plain-English report with fix steps.">
+<title>{% block title %}DomainCheck{% endblock %}</title>
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/app.js" defer></script>
+{% block head %}{% endblock %}
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5L15.5 10"/></svg>
+      DomainCheck
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="/#how">How it works</a>
+      <a href="/#limits">Limits</a>
+      <a href="/privacy">Privacy</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+</main>
+<footer class="site-footer">
+  <div class="container">
+    Passive checks only. Nothing is saved: reports disappear after an hour. <a href="/privacy">Privacy</a>
+  </div>
+</footer>
+</body>
+</html>

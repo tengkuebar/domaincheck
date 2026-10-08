@@ -1,0 +1,29 @@
+{
+  "fail": {
+    "summary": "Make every plain HTTP request redirect to the HTTPS version of the site.",
+    "action": "Redirect HTTP to HTTPS",
+    "effort": "10 min",
+    "providers": {
+      "generic": [
+        "Find the 'force HTTPS' or 'redirect HTTP to HTTPS' option at your web host or CDN and turn it on.",
+        "Make sure the redirect goes to https:// and not to another http:// address."
+      ],
+      "cpanel": [
+        "In cPanel open Domains, find your domain and turn on Force HTTPS Redirect.",
+        "If that option is missing, install a certificate first (AutoSSL under SSL/TLS Status)."
+      ]
+    }
+  },
+  "warn": {
+    "summary": "Add or lengthen the HSTS header so browsers always use HTTPS.",
+    "action": "Add an HSTS header",
+    "effort": "5 min",
+    "providers": {
+      "generic": [
+        "Add the response header: Strict-Transport-Security: max-age=31536000; includeSubDomains",
+        "Only add includeSubDomains if every subdomain works over HTTPS.",
+        "Start with a short max-age if you are unsure, then raise it to at least 180 days (15552000)."
+      ]
+    }
+  }
+}

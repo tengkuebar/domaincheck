@@ -1,0 +1,32 @@
+{
+  "fail": {
+    "summary": "Install a valid certificate that matches your domain and includes the full chain.",
+    "action": "Install a valid certificate",
+    "effort": "20 min",
+    "providers": {
+      "generic": [
+        "If it has expired, renew it. Most hosts offer free automatic certificates (Let's Encrypt or similar) so this never lapses again.",
+        "If the name does not match, make sure the certificate lists your exact domain (and www if you use it).",
+        "If the chain is incomplete, install the certificate bundle or 'full chain' file from your provider, not just the single certificate."
+      ],
+      "cpanel": [
+        "In cPanel open SSL/TLS Status, select the domain and click Run AutoSSL.",
+        "If AutoSSL fails, check that the domain's DNS points at this server."
+      ]
+    }
+  },
+  "warn": {
+    "summary": "Renew the certificate before it expires.",
+    "action": "Renew the certificate",
+    "effort": "10 min",
+    "providers": {
+      "generic": [
+        "Renew or reissue the certificate now.",
+        "Turn on automatic renewal at your host or certificate provider so this does not recur."
+      ],
+      "cpanel": [
+        "In cPanel open SSL/TLS Status and run AutoSSL. It renews certificates automatically when it can."
+      ]
+    }
+  }
+}

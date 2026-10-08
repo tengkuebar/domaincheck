@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}DomainCheck: email and website security check in plain English{% endblock %}
+{% block content %}
+<section class="landing-hero">
+  <div class="enter">
+    <p class="pill">Free · no account · nothing stored</p>
+    <h1 class="display">Is your domain's email and website security in good shape?</h1>
+    <p class="lead">Enter your domain. In under a minute you get a score, what is wrong in plain English, and what to click to fix it, for Microsoft 365, Google Workspace and cPanel.</p>
+    {% if error %}<p class="alert error" role="alert" id="domain-error">{{ error }}</p>{% endif %}
+    <form class="scan-form card" method="post" action="/scan" data-scan-form>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="field">
+        <label for="domain">Domain to check</label>
+        <input id="domain" name="domain" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="example.com" value="{{ entered or '' }}" required aria-describedby="{% if error %}domain-error {% endif %}domain-hint"{% if error %} aria-invalid="true"{% endif %}>
+      </div>
+      <button class="btn" type="submit"><span class="spinner on-accent" aria-hidden="true"></span><span class="btn-label">Run check</span></button>
+      <p class="hint" id="domain-hint">Only checks anyone could do from the internet: DNS records, the certificate and the home page. Enter the main domain, not a subdomain.</p>
+    </form>
+  </div>
+
+  <div class="enter enter-2 preview-wrap" aria-hidden="true">
+    <div class="card preview">
+      <div class="preview-head"><strong>example.com</strong><span class="eyebrow">Sample report</span></div>
+      <div class="preview-score">
+        <div class="ring-wrap small-ring">
+          <svg class="ring warn" viewBox="0 0 120 120">
+            <circle class="track" cx="60" cy="60" r="50" fill="none" stroke-width="12"/>
+            <circle class="fill" cx="60" cy="60" r="50" fill="none" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="67 100" transform="rotate(-90 60 60)"/>
+          </svg>
+          <div class="ring-label"><span class="ring-num">67</span><span class="ring-sub">out of 100</span></div>
+        </div>
+        <p><strong class="tone-warn">Fair.</strong> Fixing three things would lift this to about 93.</p>
+      </div>
+      <ul class="preview-list">
+        <li><span>Security headers</span><span class="badge bad"><span>✕</span> Fix now</span></li>
+        <li><span>DMARC</span><span class="badge warn"><span>!</span> Improve</span></li>
+        <li><span>TLS certificate</span><span class="badge good"><span>✓</span> Good</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="how" class="block">
+  <h2 class="section-title">What you get</h2>
+  <ol class="steps">
+    <li class="card"><h3>A score out of 100</h3><p class="muted">Each check has a weight. The report explains exactly how the score is worked out.</p></li>
+    <li class="card"><h3>Plain-English findings</h3><p class="muted">What is wrong, why it matters, and the evidence we found.</p></li>
+    <li class="card"><h3>Fix steps</h3><p class="muted">What to click or paste for the common email and hosting providers, ranked by what helps most.</p></li>
+  </ol>
+</section>
+
+<section class="block">
+  <h2 class="section-title">What it checks</h2>
+  <div class="groups">
+    <div class="card"><h3>Email protection</h3><p class="muted small">Stops others sending mail as you.</p>
+      <ul class="check-list">
+        <li><strong>SPF</strong> <span class="muted">who may send email as you</span></li>
+        <li><strong>DMARC</strong> <span class="muted">what happens to forged mail</span></li>
+        <li><strong>DKIM</strong> <span class="muted">signed email, common selectors</span></li>
+      </ul></div>
+    <div class="card"><h3>Encryption and HTTPS</h3><p class="muted small">Keeps visits private and trusted.</p>
+      <ul class="check-list">
+        <li><strong>TLS certificate</strong> <span class="muted">valid, trusted, not expiring</span></li>
+        <li><strong>TLS versions</strong> <span class="muted">no outdated protocols</span></li>
+        <li><strong>HTTPS and HSTS</strong> <span class="muted">HTTP redirects to HTTPS</span></li>
+      </ul></div>
+    <div class="card"><h3>Website hardening</h3><p class="muted small">Browser protections and certificate controls.</p>
+      <ul class="check-list">
+        <li><strong>Security headers</strong> <span class="muted">CSP, framing, referrer and more</span></li>
+        <li><strong>Cookie flags</strong> <span class="muted">Secure, HttpOnly, SameSite</span></li>
+        <li><strong>CAA</strong> <span class="muted">who may issue certificates</span></li>
+      </ul></div>
+  </div>
+</section>
+
+<section id="privacy" class="block card">
+  <h2 class="section-title flush-top">Privacy at a glance</h2>
+  <ul class="checklist">
+    <li><span class="tick" aria-hidden="true">✓</span> No account, email address or password.</li>
+    <li><span class="tick" aria-hidden="true">✓</span> Nothing is saved to a database or disk. Reports sit in memory for one hour, then are deleted.</li>
+    <li><span class="tick" aria-hidden="true">✓</span> One cookie, only to protect the form. No tracking, advertising or analytics.</li>
+    <li><span class="tick" aria-hidden="true">✓</span> Nothing loads from other websites.</li>
+    <li><span class="tick" aria-hidden="true">✓</span> Cookie values and page contents of the site you check are never stored.</li>
+    <li><span class="tick warn" aria-hidden="true">!</span> Anyone with your report link can read it, and the hosting provider may keep ordinary request logs.</li>
+  </ul>
+  <p class="hint"><a href="/privacy">Read the full privacy details</a></p>
+</section>
+
+<section id="limits" class="block card">
+  <h2 class="section-title flush-top">What it cannot do</h2>
+  <ul class="plain-list">
+    <li>It cannot see inside your systems. It does not check MFA, backups or patching, and it does not map to the Essential Eight.</li>
+    <li>DKIM "not detected" only means not found under the common names we try. Your provider may use a different one.</li>
+    <li>It does not find subdomains or scan ports.</li>
+    <li>This is a learning project. Treat results as a starting point, not a full security assessment.</li>
+  </ul>
+</section>
+{% endblock %}

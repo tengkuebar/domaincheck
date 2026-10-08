@@ -1,0 +1,40 @@
+{
+  "fail": {
+    "summary": "Publish one SPF record at the root of your domain that lists every service that sends your email, and ends in -all (or ~all while testing).",
+    "action": "Publish one SPF record",
+    "effort": "10 min",
+    "providers": {
+      "microsoft365": [
+        "Sign in to wherever your DNS is managed (your domain registrar or web host, not the Microsoft admin centre).",
+        "Add or edit the single TXT record at the root (shown as @ or your domain name).",
+        "Use the value: v=spf1 include:spf.protection.outlook.com -all",
+        "If other services also send as your domain (newsletters, invoicing), add their include: entries before -all, inside the same record."
+      ],
+      "google": [
+        "Sign in to wherever your DNS is managed (your domain registrar or web host).",
+        "Add or edit the single TXT record at the root (@).",
+        "Use the value: v=spf1 include:_spf.google.com ~all",
+        "Once you are sure every sender is listed, change ~all to -all.",
+        "If other services send as your domain, add their include: entries inside the same record."
+      ],
+      "cpanel": [
+        "In cPanel, open Email Deliverability and click Manage next to your domain.",
+        "cPanel shows a suggested SPF record. If it reports a problem, use the Repair or Install the suggested record button.",
+        "If you also use Microsoft 365 or Google Workspace, add their include: entry to the same record. Never create a second SPF record.",
+        "You can also edit the TXT record in Zone Editor."
+      ]
+    }
+  },
+  "warn": {
+    "summary": "The record works but could be tighter or is close to a limit.",
+    "action": "Tighten the SPF record",
+    "effort": "5 min",
+    "providers": {
+      "generic": [
+        "Replace ~all with -all once every legitimate sender is listed.",
+        "Remove 'ptr' rules and services you no longer use.",
+        "If you are at the 10 lookup limit, replace some include: entries with ip4: or ip6: addresses for senders that never change."
+      ]
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "warn": {
+    "summary": "Add the missing headers or tighten the weak ones at your web host, CDN or web server.",
+    "action": "Add or tighten headers",
+    "effort": "15 min",
+    "providers": {
+      "generic": [
+        "X-Content-Type-Options: nosniff",
+        "X-Frame-Options: DENY (or SAMEORIGIN if you embed your own pages), or a CSP frame-ancestors rule.",
+        "Referrer-Policy: strict-origin-when-cross-origin",
+        "Permissions-Policy: camera=(), microphone=(), geolocation=()",
+        "Content-Security-Policy: start in report-only mode, then avoid 'unsafe-inline' and '*' in script sources.",
+        "Cloudflare, Netlify, Vercel and most hosts let you add response headers in their settings or a config file."
+      ]
+    }
+  },
+  "fail": {
+    "summary": "Several security headers are missing. Add them at your web host, CDN or web server.",
+    "action": "Add the missing headers",
+    "effort": "15 min",
+    "providers": {
+      "generic": [
+        "X-Content-Type-Options: nosniff",
+        "X-Frame-Options: DENY (or SAMEORIGIN if you embed your own pages), or a CSP frame-ancestors rule.",
+        "Referrer-Policy: strict-origin-when-cross-origin",
+        "Permissions-Policy: camera=(), microphone=(), geolocation=()",
+        "Content-Security-Policy: start in report-only mode, then enforce once nothing breaks.",
+        "Cloudflare, Netlify, Vercel and most hosts let you add response headers in their settings or a config file."
+      ]
+    }
+  }
+}

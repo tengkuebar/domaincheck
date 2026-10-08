@@ -1,0 +1,15 @@
+{
+  "fail": {
+    "summary": "Remove the exposed files and assume anything secret in them has leaked.",
+    "action": "Remove the exposed files",
+    "effort": "15 min",
+    "providers": {
+      "generic": [
+        "Delete the exposed files from the web-accessible folder, or block them in your web server configuration.",
+        "Change every password, key or token that was in them (database passwords, API keys).",
+        "Keep source control folders such as .git and environment files outside the public web root.",
+        "Check your logs for who may have downloaded them."
+      ]
+    }
+  }
+}

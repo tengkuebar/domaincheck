@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Privacy - DomainCheck{% endblock %}
+{% block content %}
+<div class="prose">
+  <h1>Privacy</h1>
+  <p class="lead">DomainCheck keeps very little. This page says exactly what, and where the limits are.</p>
+
+  <h2>The short version</h2>
+  <ul class="checklist">
+    <li><span class="tick" aria-hidden="true">✓</span> No account, email address or password.</li>
+    <li><span class="tick" aria-hidden="true">✓</span> No database. Nothing is written to disk by the app.</li>
+    <li><span class="tick" aria-hidden="true">✓</span> Reports are held in the server's memory for one hour, then deleted.</li>
+    <li><span class="tick" aria-hidden="true">✓</span> One cookie, used only to protect the form. No tracking, advertising or analytics.</li>
+    <li><span class="tick" aria-hidden="true">✓</span> Nothing is loaded from other websites: no fonts, scripts, images or trackers.</li>
+    <li><span class="tick warn" aria-hidden="true">!</span> Not private from anyone who has your report link, or from the hosting provider's ordinary request logs. See the limits below.</li>
+  </ul>
+
+  <h2>What happens when you run a check</h2>
+  <p>You type a domain. Our server then looks at that domain from the outside, the same way any visitor or mail server could:</p>
+  <ul>
+    <li>DNS lookups for its SPF, DMARC, DKIM and CAA records.</li>
+    <li>A few secure connections to port 443, to read the certificate and see which TLS versions it accepts.</li>
+    <li>One request for the home page over HTTPS and one over plain HTTP, to read the headers and cookie flags.</li>
+  </ul>
+  <p>The site you check sees these requests coming from our server, not from you. They are labelled "DomainCheck" in the User-Agent. There is also an optional check that asks for a short fixed list of sensitive file paths (such as <code>/.env</code>). It is off unless whoever runs the server turns it on.</p>
+
+  <h2>What we keep, and for how long</h2>
+  <table class="plain-table">
+    <thead><tr><th>What</th><th>Where</th><th>How long</th></tr></thead>
+    <tbody>
+      <tr><td data-label="What">The domain you entered, and the findings for it</td><td data-label="Where">Server memory</td><td data-label="How long">One hour, then deleted. Cleared sooner if the server restarts or the store is full.</td></tr>
+      <tr><td data-label="What">Your IP address and the domain, as counters for rate limits</td><td data-label="Where">Server memory</td><td data-label="How long">Up to one hour</td></tr>
+      <tr><td data-label="What">PDF downloads</td><td data-label="Where">Built when you ask, not stored</td><td data-label="How long">Not kept</td></tr>
+      <tr><td data-label="What">Cookie values and page contents of the site you check</td><td data-label="Where">Not recorded</td><td data-label="How long">Never stored. Reports show cookie names and flags only.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Cookies</h2>
+  <table class="plain-table">
+    <thead><tr><th>Name</th><th>Purpose</th><th>Lifetime</th><th>Settings</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Name"><code>dc_session</code></td><td data-label="Purpose">Holds a random security token that stops other websites from submitting the scan form for you. It contains no personal data.</td><td data-label="Lifetime">8 hours</td><td data-label="Settings">HttpOnly, SameSite=Lax, Secure on HTTPS</td></tr>
+    </tbody>
+  </table>
+  <p>It is set when you open the site, because the form needs it. The pages do not use local storage, session storage or any other tracking technology.</p>
+
+  <h2>Who can see your report</h2>
+  <p>Each report has a long random link that cannot be guessed. Anyone who has the link can read the report until it expires, so share it with care. There is no list of reports and no search.</p>
+
+  <h2>Limits of this promise</h2>
+  <ul>
+    <li><strong>Server logs.</strong> The server software and the hosting provider may keep ordinary request logs: time, IP address and the page address. A report's page address contains its private link. DomainCheck itself does not add your domain to its logs.</li>
+    <li><strong>Public information.</strong> The checks only read what the domain already publishes. If a result worries you, assume others could see the same thing.</li>
+    <li><strong>A learning project.</strong> It comes with no guarantees. Do not use it for anything that needs a formal privacy or security assurance.</li>
+    <li><strong>Running it yourself.</strong> If you run your own copy, you decide where logs go and how long they stay.</li>
+  </ul>
+  <p><a href="/">Back to the start</a></p>
+</div>
+{% endblock %}

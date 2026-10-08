@@ -1,0 +1,18 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+*.db
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Third-party skills installed with `npx skills` live in .agents/ and are linked into
+# .claude/skills/ with Windows junctions. skills-lock.json records them, so they can be restored.
+.agents/
+.claude/skills/*
+!.claude/skills/plain-writing/
+!.claude/skills/ssrf-review/
+.claude/settings.local.json

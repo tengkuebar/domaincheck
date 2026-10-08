@@ -1,0 +1,28 @@
+{
+  "warn": {
+    "summary": "Turn off TLS 1.0 and 1.1 so only TLS 1.2 and 1.3 are accepted.",
+    "action": "Turn off TLS 1.0 and 1.1",
+    "effort": "10 min",
+    "providers": {
+      "generic": [
+        "Managed hosts and CDNs usually have a 'minimum TLS version' setting. Set it to TLS 1.2.",
+        "On your own server, set the protocols to TLS 1.2 and 1.3 only (for nginx: ssl_protocols TLSv1.2 TLSv1.3;).",
+        "Very old browsers and devices will stop working, which is expected."
+      ],
+      "cpanel": [
+        "In WHM, under Apache Configuration, then Global Configuration, set SSL Protocols to exclude TLS 1.0 and 1.1. On shared hosting ask your host to do this."
+      ]
+    }
+  },
+  "fail": {
+    "summary": "Enable TLS 1.2 or 1.3 on the server.",
+    "action": "Enable TLS 1.2 or 1.3",
+    "effort": "30 min",
+    "providers": {
+      "generic": [
+        "Update the server software or ask your host to enable TLS 1.2 and 1.3.",
+        "Managed hosts and CDNs usually offer this as a setting."
+      ]
+    }
+  }
+}

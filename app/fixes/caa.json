@@ -1,0 +1,18 @@
+{
+  "warn": {
+    "summary": "Optional: publish a CAA record naming the certificate authority you use.",
+    "action": "Publish a CAA record",
+    "effort": "5 min",
+    "providers": {
+      "generic": [
+        "Find out which authority issues your certificate (look at the certificate details in your browser).",
+        "In your DNS manager add a CAA record at the root with flag 0, tag issue and the authority's domain, for example letsencrypt.org or digicert.com.",
+        "If you use a host that issues certificates for you (such as a CDN), add that provider's authority too, or issuing will fail."
+      ],
+      "cpanel": [
+        "In cPanel open Zone Editor and add a CAA record for the root domain.",
+        "AutoSSL uses Sectigo or Let's Encrypt depending on setup; check which before restricting."
+      ]
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "fail": {
+    "summary": "Mark cookies Secure so browsers never send them over plain HTTP.",
+    "action": "Add the Secure flag",
+    "effort": "15 min",
+    "providers": {
+      "generic": [
+        "In your application or CMS settings, turn on secure cookies. For frameworks this is usually a setting such as SESSION_COOKIE_SECURE.",
+        "Add HttpOnly and SameSite=Lax (or Strict) at the same time."
+      ]
+    }
+  },
+  "warn": {
+    "summary": "Add HttpOnly and SameSite to the cookies listed.",
+    "action": "Add HttpOnly and SameSite",
+    "effort": "15 min",
+    "providers": {
+      "generic": [
+        "Set HttpOnly on cookies that scripts do not need to read, especially session cookies.",
+        "Set SameSite=Lax unless you need the cookie on cross-site requests.",
+        "Cookies set by third-party tools (analytics, chat) may not be under your control."
+      ]
+    }
+  }
+}

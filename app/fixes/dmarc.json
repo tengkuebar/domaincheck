@@ -1,0 +1,37 @@
+{
+  "fail": {
+    "summary": "Publish a DMARC record. Start in monitoring mode, read the reports, then tighten the policy.",
+    "action": "Publish a DMARC record",
+    "effort": "10 min",
+    "providers": {
+      "microsoft365": [
+        "In your DNS manager, add a TXT record named _dmarc.",
+        "Start with: v=DMARC1; p=none; rua=mailto:dmarc-reports@yourdomain.com (use a mailbox you actually read).",
+        "Make sure SPF and DKIM are set up first, or genuine mail will fail DMARC later."
+      ],
+      "google": [
+        "In your DNS manager, add a TXT record named _dmarc.",
+        "Start with: v=DMARC1; p=none; rua=mailto:dmarc-reports@yourdomain.com (use a mailbox you actually read).",
+        "Make sure SPF and DKIM are set up first."
+      ],
+      "cpanel": [
+        "In cPanel open Zone Editor, then Manage for your domain, and add a TXT record named _dmarc.",
+        "Value: v=DMARC1; p=none; rua=mailto:dmarc-reports@yourdomain.com",
+        "Check that Email Deliverability shows SPF and DKIM as valid first."
+      ]
+    }
+  },
+  "warn": {
+    "summary": "Move from monitoring to enforcement once reports show your genuine mail passes.",
+    "action": "Add reporting, then enforce",
+    "effort": "10 min",
+    "providers": {
+      "generic": [
+        "Review the reports sent to your rua address for a few weeks.",
+        "Change p=none to p=quarantine, then later to p=reject.",
+        "If pct is below 100, raise it to 100 when you are confident.",
+        "If there is no rua= address, add one so you can see who sends as your domain."
+      ]
+    }
+  }
+}

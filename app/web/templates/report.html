@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block title %}Report for {{ scan.domain }} - DomainCheck{% endblock %}
+
+{% macro badge(status) -%}
+{% set s = STATUS[status] %}<span class="badge {{ s[2] }}"><span aria-hidden="true">{{ s[1] }}</span> {{ s[0] }}</span>
+{%- endmacro %}
+
+{% macro bar(pct, tone) -%}
+<div class="bar" aria-hidden="true"><div class="bar-fill {{ tone }}" data-pct="{{ pct }}"></div></div>
+{%- endmacro %}
+
+{% block head %}
+{# Without JavaScript the page reloads itself while the scan runs. With JavaScript, app.js polls instead, which does not reset the reader's position. #}
+{% if running %}<noscript><meta http-equiv="refresh" content="3"></noscript>{% endif %}
+{% endblock %}
+
+{% block content %}
+<p class="back"><a href="/"><span aria-hidden="true">&larr;</span> Check another domain</a></p>
+
+{% if running %}
+<h1>{{ scan.domain }}</h1>
+<div class="card running" role="status" data-running>
+  <p><span class="spinner" aria-hidden="true"></span> Checking <strong>{{ scan.domain }}</strong>. This usually takes under a minute, and the page updates by itself.</p>
+</div>
+
+{% elif scan.status == 'failed' %}
+<h1>{{ scan.domain }}</h1>
+<p class="alert error" role="alert">The check failed. Please try again.</p>
+
+{% else %}
+<section class="card hero-card enter" aria-label="Summary">
+  {% if score is not none %}
+  <div class="ring-wrap">
+    <svg class="ring {{ band[0] }}" viewBox="0 0 120 120" role="img" aria-label="Score {{ score }} out of 100">
+      <circle class="track" cx="60" cy="60" r="50" fill="none" stroke-width="11"/>
+      <circle class="fill" cx="60" cy="60" r="50" fill="none" stroke-width="11" stroke-linecap="round" pathLength="100" stroke-dasharray="{{ score }} 100" transform="rotate(-90 60 60)"/>
+    </svg>
+    <div class="ring-label" aria-hidden="true"><span class="ring-num">{{ score }}</span><span class="ring-sub">out of 100</span></div>
+  </div>
+  {% endif %}
+  <div class="hero-text">
+    <p class="muted small">Checked just now</p>
+    <h1>{{ scan.domain }}</h1>
+    {% if band %}
+    <p class="verdict"><strong class="tone-{{ band[0] }}">{{ band[1] }}.</strong>
+      {% if weakest and weakest.pct is not none and weakest.pct < 100 %}{{ weakest.name }} is the weakest area.{% endif %}
+      {% if score_after is not none and score is not none and score_after > score %}Fixing the top items below would lift the score from {{ score }} to about {{ score_after }}.{% endif %}
+    </p>
+    {% else %}
+    <p class="verdict">No check could be scored, so there is no score. See the notes below.</p>
+    {% endif %}
+    <p class="hero-actions"><a class="btn secondary" href="/r/{{ scan.id }}/report.pdf" download>Download PDF</a></p>
+    <div class="counts">
+      {% if counts.fail %}<span class="badge bad"><span aria-hidden="true">✕</span> {{ counts.fail }} to fix</span>{% endif %}
+      {% if counts.warn %}<span class="badge warn"><span aria-hidden="true">!</span> {{ counts.warn }} to improve</span>{% endif %}
+      {% if counts.not_detected %}<span class="badge neutral"><span aria-hidden="true">?</span> {{ counts.not_detected }} not detected</span>{% endif %}
+      {% if counts.error %}<span class="badge neutral"><span aria-hidden="true">–</span> {{ counts.error }} could not check</span>{% endif %}
+      <span class="badge good"><span aria-hidden="true">✓</span> {{ counts.pass }} good</span>
+    </div>
+  </div>
+</section>
+
+<section class="areas" aria-label="Areas">
+  {% for cat in categories %}
+  <div class="card area">
+    <div class="area-head">
+      <h2>{{ cat.name }}</h2>
+      {% if cat.pct is not none %}<div class="area-pct tone-{{ cat.band[0] }}">{{ cat.pct }}<span>%</span></div>{% endif %}
+    </div>
+    {% if cat.pct is not none %}{{ bar(cat.pct, cat.band[0]) }}{% endif %}
+    <p class="muted small">{{ cat.blurb }}</p>
+    <ul class="area-list">
+      {% for r in cat.rows %}
+      <li><span>{{ r.short }}</span>{{ badge(r.finding.status) }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+</section>
+
+<section class="split">
+  <div class="card fixfirst">
+    <h2>Fix these first</h2>
+    {% if fix_first %}
+    <p class="muted small">Ordered by how many score points each fix is worth. Effort is a typical estimate.</p>
+    <ol class="fixlist">
+      {% for f in fix_first %}
+      <li>
+        <span class="rank" aria-hidden="true">{{ f.rank }}</span>
+        <div class="fix-main"><strong>{{ f.title }}</strong><span class="muted small">{{ f.action }}</span></div>
+        <div class="fix-meta"><strong class="gain">+{{ f.gain }} pts</strong><span class="muted small">{{ f.effort }}</span></div>
+      </li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <p class="muted">Nothing to fix. Every check that ran passed.</p>
+    {% endif %}
+  </div>
+
+  <div class="card weights">
+    <h2>How the score works</h2>
+    <p class="muted small">Each check has a weight. A pass earns it all, a warning half, a fail none. "Not detected" counts as a warning, and a check that could not run is left out. Weights are a judgement call.</p>
+    <ul>
+      {% for w in weights %}
+      <li><span class="w-name">{{ w.short }}</span>{{ bar(w.pct, 'accent') }}<span class="w-num">{{ w.weight }}</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+<section class="card findings" aria-label="All findings">
+  <div class="findings-head">
+    <h2>All findings</h2>
+    <div class="chips" role="group" aria-label="Filter findings" hidden>
+      <button class="chip" type="button" data-filter="all" aria-pressed="true">All <span>{{ rows | length }}</span></button>
+      {% if counts.fail %}<button class="chip" type="button" data-filter="fail" aria-pressed="false">Fix now <span>{{ counts.fail }}</span></button>{% endif %}
+      {% if counts.warn %}<button class="chip" type="button" data-filter="warn" aria-pressed="false">Improve <span>{{ counts.warn }}</span></button>{% endif %}
+      {% if counts.not_detected %}<button class="chip" type="button" data-filter="not_detected" aria-pressed="false">Not detected <span>{{ counts.not_detected }}</span></button>{% endif %}
+      <button class="chip" type="button" data-filter="pass" aria-pressed="false">Good <span>{{ counts.pass }}</span></button>
+    </div>
+  </div>
+
+  <p class="sr-only" id="filter-status" role="status"></p>
+
+  <div class="rows">
+    {% for r in rows %}
+    {% set f = r.finding %}
+    <details class="row" data-status="{{ f.status }}"{% if first_open == f.check_id %} open{% endif %}>
+      <summary>
+        {{ badge(f.status) }}
+        <span class="row-title">{{ f.title }}</span>
+        <span class="row-pts muted small">{% if r.gain > 0 %}+{{ r.gain }} pts available{% elif f.status == 'pass' %}full marks{% endif %}</span>
+        <span class="chev" aria-hidden="true"></span>
+      </summary>
+      <div class="row-body">
+        <div class="row-col">
+          <p>{{ f.explanation }}</p>
+          {% if f.evidence %}
+          <h3 class="eyebrow">Evidence</h3>
+          <dl class="evidence">
+            {% for k, v in f.evidence.items() %}
+            <dt>{{ k | replace('_', ' ') }}</dt>
+            <dd>{% if v is mapping or (v is iterable and v is not string) %}<pre>{{ v | tojson(indent=2) }}</pre>{% elif v is none %}<span class="muted">none</span>{% else %}<code>{{ v }}</code>{% endif %}</dd>
+            {% endfor %}
+          </dl>
+          {% endif %}
+        </div>
+        {% if r.fix %}
+        <div class="row-col fix">
+          <h3 class="eyebrow">How to fix{% if r.fix.effort %} <span class="muted">· about {{ r.fix.effort }}</span>{% endif %}</h3>
+          <p>{{ r.fix.summary }}</p>
+          {% for p in r.fix.providers %}
+          <h4>{{ p.name }}</h4>
+          <ol>{% for step in p.steps %}<li>{{ step }}</li>{% endfor %}</ol>
+          {% endfor %}
+          <p class="hint">Provider screens change. If a step does not match, check your provider's help pages.</p>
+        </div>
+        {% endif %}
+      </div>
+    </details>
+    {% endfor %}
+  </div>
+</section>
+
+<p class="hint space-top">This report is kept for one hour and is not saved anywhere else. Anyone with this link can view it.</p>
+{% endif %}
+{% endblock %}

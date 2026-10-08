@@ -1,0 +1,46 @@
+{
+  "not_detected": {
+    "summary": "Turn on DKIM signing at your email provider and publish the key it gives you. We only test common selector names, so if DKIM is already on under a custom name, this result may be a false alarm.",
+    "action": "Turn on DKIM signing",
+    "effort": "15 min",
+    "providers": {
+      "microsoft365": [
+        "In the Microsoft Defender portal, find the DKIM setting under email authentication settings and select your domain.",
+        "Microsoft shows two CNAME records (selector1 and selector2 under _domainkey). Publish both in your DNS manager.",
+        "Return to the DKIM page and switch signing on for the domain."
+      ],
+      "google": [
+        "In the Google Admin console, open Gmail settings, then Authenticate email.",
+        "Select your domain and generate a new key, choosing a 2048-bit key.",
+        "Publish the TXT record it shows in your DNS manager, then click Start authentication."
+      ],
+      "cpanel": [
+        "In cPanel open Email Deliverability and click Manage next to your domain.",
+        "If DKIM shows a problem, use the Repair or Install button. cPanel creates and publishes the key for you when it hosts your DNS."
+      ]
+    }
+  },
+  "warn": {
+    "summary": "Replace 1024-bit keys with 2048-bit keys.",
+    "action": "Replace the 1024-bit key",
+    "effort": "20 min",
+    "providers": {
+      "generic": [
+        "Generate a new 2048-bit key at your email provider and publish it under a new selector.",
+        "After mail is signing with the new key, remove the old selector's record.",
+        "Some DNS hosts limit TXT record length; a 2048-bit key may need to be split into two quoted strings in one record."
+      ]
+    }
+  },
+  "fail": {
+    "summary": "The key is too weak or unreadable. Generate a new 2048-bit key at your email provider and publish it.",
+    "action": "Replace the weak key",
+    "effort": "20 min",
+    "providers": {
+      "generic": [
+        "Generate a new 2048-bit key at your email provider.",
+        "Publish it, confirm signing works, then remove the broken record."
+      ]
+    }
+  }
+}
